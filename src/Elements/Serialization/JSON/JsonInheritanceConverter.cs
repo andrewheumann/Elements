@@ -183,7 +183,10 @@ namespace Elements.Serialization.JSON
             {
                 _isReading = true;
                 var obj = serializer.Deserialize(jObject.CreateReader(), subtype);
-
+                if(obj == null)
+                {
+                    throw new Exception($"Unable to create subtype {subtype}");
+                }
                 // Write the id to the cache so that we can retrieve it next time
                 // instead of de-serializing it again.
                 if(typeof(Element).IsAssignableFrom(objectType) && reader.Path.Split('.').Length > 1)

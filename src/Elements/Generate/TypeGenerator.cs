@@ -345,13 +345,22 @@ namespace Elements.Generate
 
             }
 
-            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            var baseFramework = typeof(object).Assembly;
+            var assemblyPath = Path.GetDirectoryName(baseFramework.Location);
+
+            // this is a fix for mac compatibility:
+            var hasMono = Type.GetType("Mono.Runtime") != null;
+            if (hasMono) // aka the kissing disease
+            {
+                assemblyPath = Path.Combine(assemblyPath, "Facades");
+            }
+
             var elementsAssemblyPath = Path.GetDirectoryName(typeof(Model).Assembly.Location);
             var newtonSoftPath = Path.GetDirectoryName(typeof(JsonConverter).Assembly.Location);
 
             List<PortableExecutableReference> defaultReferences = new List<PortableExecutableReference>
             {
-            #if NETFRAMEWORK
+#if NETFRAMEWORK
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
@@ -360,9 +369,9 @@ namespace Elements.Generate
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.Extensions.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ComponentModel.DataAnnotations.dll")),
-               #else
+#else
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Private.CoreLib.dll")),
-               #endif
+#endif
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ComponentModel.Annotations.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Diagnostics.Tools.dll")),
