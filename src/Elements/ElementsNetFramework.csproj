@@ -7,7 +7,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hypar.Elements</RootNamespace>
     <AssemblyName>Hypar.Elements</AssemblyName>
-    <PackageTitle>Hypar Elements</PackageTitle>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <Version>$(Version)</Version>
