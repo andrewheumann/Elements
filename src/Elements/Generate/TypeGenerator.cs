@@ -70,6 +70,25 @@ namespace Elements.Generate
 
         private const string NAMESPACE_PROPERTY = "x-namespace";
         private static string[] _coreTypeNames;
+        private static string _templatesPath;
+
+        /// <summary>
+        /// The directory in which to find code templates. Some execution contexts require this to be overriden as the 
+        /// Executing Assembly is not necessarily in the same place as the templates (e.g. Headless Grasshopper Execution)
+        /// </summary>
+        public static string TemplatesPath
+        {
+            get
+            {
+                if (_templatesPath == null)
+                {
+                    _templatesPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "./Templates"));
+                }
+                return _templatesPath;
+            }
+            set => _templatesPath = value;
+        }
+
 
         /// <summary>
         /// Generate a user-defined type in a .g.cs file from a schema.
