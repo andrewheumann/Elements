@@ -3,13 +3,11 @@
     <TargetFramework>net472</TargetFramework>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>7a41ef7e-d7ca-41c5-b26d-1bc6f4ff755c</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hypar.Elements</RootNamespace>
     <AssemblyName>Hypar.Elements</AssemblyName>
     <PackageTitle>Hypar Elements</PackageTitle>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <Version>$(Version)</Version>
