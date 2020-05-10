@@ -65,6 +65,18 @@ namespace Elements.Spatial
         }
 
         /// <summary>
+        /// Construct a 1D Grid from another 1D Grid
+        /// </summary>
+        /// <param name="other"></param>
+        public Grid1d(Grid1d other) {
+            this.curve = other.curve;
+            this.curveDomain = other.curveDomain;
+            this.Domain = other.Domain;
+            this.Cells = other.Cells.Select(c => new Grid1d(c)).ToList();
+            this.Type = other.Type;
+        }
+
+        /// <summary>
         /// Construct a 1D grid from a numerical domain. The geometry will be assumed to lie along the X axis.
         /// </summary>
         /// <param name="domain">The 1-dimensional domain for the grid extents.</param>
