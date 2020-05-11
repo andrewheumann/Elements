@@ -338,14 +338,14 @@ namespace Elements.Generate
         /// <param name="schema"></param>
         /// <param name="dllPath"></param>
         /// <returns></returns>
-        public static string GenerateAndSaveDllForSchema(JsonSchema schema, string dllPath)
+        public static string GenerateAndSaveDllForSchema(JsonSchema schema, string dllPath, bool frameworkBuild = false)
         {
             var csharp = GenerateCodeForSchema(schema);
             if (csharp == null)
             {
                 return null;
             }
-            var compilation = GenerateCompilation(new List<string> { csharp }, schema.Title);
+            var compilation = GenerateCompilation(new List<string> { csharp }, schema.Title, frameworkBuild);
             var result = EmitAndSave(compilation, dllPath, out string[] diagnostics);
             if (result == null)
             {
@@ -379,7 +379,7 @@ namespace Elements.Generate
             return WriteTypeFromSchema(schema, typeName, ns, true, localExcludes);
         }
 
-        private static CSharpCompilation GenerateCompilation(List<string> code, string compilationName = "UserElements")
+        private static CSharpCompilation GenerateCompilation(List<string> code, string compilationName = "UserElements", bool frameworkBuild = false)
         {
             // Generate the assembly from the various code files.
             var options = new CSharpParseOptions(LanguageVersion.CSharp7_3,
@@ -398,19 +398,7 @@ namespace Elements.Generate
             var newtonSoftPath = Path.GetDirectoryName(typeof(JsonConverter).Assembly.Location);
 
             IEnumerable<MetadataReference> defaultReferences = new[]
-            {
-             #if NETFULL
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ObjectModel.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.Extensions.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ComponentModel.DataAnnotations.dll")),
-               #else
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Private.CoreLib.dll")),
-               #endif
+           {
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ComponentModel.Annotations.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Diagnostics.Tools.dll")),
@@ -419,6 +407,27 @@ namespace Elements.Generate
                 MetadataReference.CreateFromFile(Path.Combine(elementsAssemblyPath, "Hypar.Elements.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(newtonSoftPath, "Newtonsoft.Json.dll"))
             };
+
+            // If we're building in a .net framework context, we need a different set of reference DLLs
+            if (frameworkBuild)
+            {
+                defaultReferences = defaultReferences.Union(new[]
+                {
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ObjectModel.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.Extensions.dll")),
+                    MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ComponentModel.DataAnnotations.dll")),
+                });
+            }
+            else
+            {
+                defaultReferences = defaultReferences.Union(new[] { MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Private.CoreLib.dll")) });
+            }
+
 
             var compileOptions = new CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind.DynamicallyLinkedLibrary,
                                                               optimizationLevel: Microsoft.CodeAnalysis.OptimizationLevel.Release);
@@ -442,7 +451,7 @@ namespace Elements.Generate
                 return outputPath;
             }
         }
-        
+
         private static Assembly EmitAndLoad(CSharpCompilation compilation, out string[] diagnosticMessages)
         {
             Assembly assembly = null;
