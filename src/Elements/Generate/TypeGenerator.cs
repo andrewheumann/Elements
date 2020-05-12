@@ -217,7 +217,10 @@ namespace Elements.Generate
         /// Get the Schema information for a given schema URI.
         /// </summary>
         /// <param name="uri">The web URL or file path to the schema JSON.</param>
-        public static JsonSchema GetSchema(string uri) => Task.Run(() => GetSchemaAsync(uri)).Result;
+        public static JsonSchema GetSchema(string uri)
+        {
+            return Task.Run(() => GetSchemaAsync(uri)).Result;
+        }
 
         private static async Task<JsonSchema> GetSchemaAsync(string uri)
         {
