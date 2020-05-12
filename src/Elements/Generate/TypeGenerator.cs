@@ -337,6 +337,7 @@ namespace Elements.Generate
         /// </summary>
         /// <param name="schema"></param>
         /// <param name="dllPath"></param>
+        /// <param name="frameworkBuild"></param>
         /// <returns></returns>
         public static string GenerateAndSaveDllForSchema(JsonSchema schema, string dllPath, bool frameworkBuild = false)
         {
