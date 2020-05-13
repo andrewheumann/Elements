@@ -63,7 +63,7 @@ namespace Elements.Spatial
         {
 
         }
-        
+
         /// <summary>
         /// Construct a 1D grid from a numerical domain. The geometry will be assumed to lie along the X axis.
         /// </summary>
